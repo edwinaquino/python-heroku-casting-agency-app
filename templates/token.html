@@ -1,0 +1,73 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<h1>Token Information v1</h1>
+<hr>
+<p>Use the following token information to run your PostMan test</p>
+<div id="TokenInfo"></div>
+<textarea name="" id="decoded" cols="80" rows="10"></textarea><br>
+<input type="button" value="Decode Token" id="decode">
+<hr>
+<h2>LOGOUT: Help: https://auth0.com/docs/api/authentication#logout</h2>
+AuthUrl <input type="text" name="" id="AuthUrl" style="width: 100%;"><br>
+<input type="button" id="logout" value="Logout">
+<script>
+  let b64DecodeUnicode = str =>
+    decodeURIComponent(
+      Array.prototype.map.call(atob(str), c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''))
+
+  let parseJwt = token =>
+    JSON.parse(
+      b64DecodeUnicode(
+        token.split('.')[1].replace('-', '+').replace('_', '/')
+      )
+    )
+
+  $('#decode').on('click', function () {
+    $('#decoded').val(JSON.stringify(parseJwt($('#access_token').val())));
+  })
+
+  function getSearchParameters() {
+    var prmstr = window.location.href;
+    var params = prmstr.split("#");
+    return prmstr != null && prmstr != "" ? transformToAssocArray(params[1]) : {};
+  }
+
+  function transformToAssocArray(prmstr) {
+    var params = {};
+    var prmarr = prmstr.split("&");
+    for (var i = 0; i < prmarr.length; i++) {
+      var tmparr = prmarr[i].split("=");
+      params[tmparr[0]] = tmparr[1];
+    }
+    return params;
+  }
+
+  var paramArr = getSearchParameters()
+
+  $.each(paramArr, function (key, value) {
+    //alert( key + ": " + value );
+    //$('#demo').html(  key+'='+value+'<BR>' );
+    var htmlCode = '<b>' + key + ':</b><br>';
+
+    if (value.length > 20) htmlCode += '<textarea style="min-width: 500px;min-height: 100px;" id="' + key + '">' + value + '</textarea>';
+    else htmlCode += '<input type="text" value="' + value + '" id="' + key + '">';
+    htmlCode += '<br><br>';
+    $('#TokenInfo').append(htmlCode);
+
+  });
+
+  $('#logout').on('click', function () {
+    //alert('AuthUrl');
+    // BUILD THE AUTH0 LOGOUT URL
+    AuthUrl = 'https://';
+    AuthUrl += "{{AUTH0_DOMAIN}}";
+    AuthUrl += '/v2/logout?';
+    AuthUrl += 'client_id={{client_id}}&';
+    AuthUrl += 'redirect_uri={{redirect_uri}}&';
+
+    //window.open(AuthUrl, '_blank');
+    $('#AuthUrl').val(AuthUrl).after('<a href="' + AuthUrl + '" target="new">CLICK HERE TO GENERATE A NEW JWT TOKEN</a>');
+  })
+//console.log(paramArr);
+</script>

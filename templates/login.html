@@ -1,0 +1,38 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<form action="" method="GET">
+
+    Domain<br><input type="text" name="domain" id="domain" value="{{AUTH0_DOMAIN}}"><br><br>
+    Audience<br><input type="text" name="audience" id="audience" value="{{API_AUDIENCE}}"><br><br>
+    response_type<br><input type="text" name="response_type" id="response_type" value="token"><br><br>
+    client_id<br><input type="text" name="client_id" id="client_id" value="{{client_id}}"><br><br>
+    redirect_uri<br><input type="text" name="redirect_uri" id="redirect_uri" value="{{redirect_uri}}"><br><br>
+    <input type="button" id="generateUrl" value="Login">
+</form>
+
+
+APP_ENV={{APP_ENV}}<br>
+DATABASE_URL={{DATABASE_URL}}<br>
+DOMAIN_NAME={{DOMAIN_NAME}}<br>
+REQUEST_URL={{REQUEST_URL}}<br>
+<hr>
+Testing links: [no permissions required]<br>
+movies: <a href="/movies" target="movies">GET: all movies </a><br>
+movies: <a href="/movies/1" target="movies">GET: movie_id = 1 </a><br>
+
+<!-- xdg-open "https://$AUTH0_DOMAIN/authorize?audience=$AUTH0_API_AUDIENCE&response_type=token&client_id=$AUTH0_APP_CLIENT_ID&redirect_uri=$AUTH0_ALLOWED_CALLBACK_URL" -->
+<div id="AuthUrl"></div>
+<script>
+    $('#generateUrl').on('click', function () {
+        // BUILD THE AUTH0 URL
+        AuthUrl = 'https://';
+        AuthUrl += $('#domain').val();
+        AuthUrl += '/authorize?';
+        AuthUrl += 'audience=' + $('#audience').val() + '&';
+        AuthUrl += 'response_type=' + $('#response_type').val() + '&';
+        AuthUrl += 'client_id=' + $('#client_id').val() + '&';
+        AuthUrl += 'redirect_uri=' + $('#redirect_uri').val() + '&';
+
+        window.open(AuthUrl, '_blank');
+        $('#AuthUrl').text(AuthUrl);
+    })
+</script>  
